@@ -76,7 +76,7 @@ You should now see the EVE‑NG dashboard where labs are managed.
 To run network devices (Cisco routers/switches) in EVE‑NG you must upload images.
 
 1.  Connect to the EVE‑NG VM via **SFTP** ([WinSCP](https://winscp.net/eng/download.php), [FileZilla](https://filezilla-project.org/)).
-2.  Download the Images from the Git hub
+2.  Download the Images from [Google Drive](https://drive.google.com/file/d/1OIBchx85RLvKP9Hf6fjxtyh3PWzuovsl/view?usp=sharing)
 3.  Transfer your Cisco IOL images into:
     `/opt/unetlab/addons/iol/bin/`
 4.  On the EVE‑NG VM shell, run the permission fix command:
