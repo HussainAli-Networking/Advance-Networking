@@ -1,4 +1,4 @@
-# Advanced Networking Labs — EVE-NG
+# Advanced Networking 
 
 This repository contains **Advanced Networking labs** implemented and tested in **EVE-NG**.  
 It is designed for hands-on learning, revision, and real-world scenario practice.
