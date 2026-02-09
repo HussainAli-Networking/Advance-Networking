@@ -1,0 +1,31 @@
+OSPF auto-cost reference-bandwidth — Note
+
+auto-cost reference-bandwidth is used in OSPF to control how interface cost is calculated.
+
+OSPF uses the following formula:
+
+Cost = Reference Bandwidth / Interface Bandwidth
+
+By default, the reference bandwidth is 100 Mbps. This makes all links of 100 Mbps and above have a cost of 1, which causes fast links (1G, 10G, etc.) to be treated the same.
+
+To fix this, the reference bandwidth must be increased.
+
+Example:
+
+router ospf 1
+ auto-cost reference-bandwidth 10000
+
+This sets the reference bandwidth to 10,000 Mbps (10 Gbps).
+
+Resulting costs:
+
+10 Gbps  -> Cost 1
+1 Gbps   -> Cost 10
+100 Mbps -> Cost 100
+
+All routers in the same OSPF domain must use the same reference bandwidth to avoid inconsistent routing.
+
+If ip ospf cost is manually configured on an interface, it overrides automatic cost calculation.
+
+Purpose:
+To make OSPF prefer higher-speed links correctly in modern networks.
