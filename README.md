@@ -26,11 +26,6 @@ It is designed for hands-on learning, revision, and real-world scenario practice
 - Labs covering **Basic BGP setup**.
 - Topics: iBGP, eBGP, neighbor configuration, and routing table verification.
 
-## Advanced BGP
-
-- Labs for advanced BGP features.
-- Topics: Route filtering, prefix-lists, route-maps, and policy-based routing.
-
 ## BGP Path Selection
 
 - Hands-on practice with **BGP path selection rules**.
