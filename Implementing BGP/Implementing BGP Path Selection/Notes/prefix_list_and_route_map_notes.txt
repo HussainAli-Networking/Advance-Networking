@@ -1,0 +1,62 @@
+PREFIX-LIST AND ROUTE-MAP (BGP)
+
+1) PREFIX-LIST
+
+Definition: A prefix-list is used in BGP to match specific IP network
+prefixes.
+
+Purpose: - Allow or deny specific routes - Control what routes are
+accepted or advertised - Cleaner and more precise than ACLs for route
+filtering
+
+Basic Syntax: ip prefix-list NAME permit|deny NETWORK/LENGTH [le X] [ge Y]
+
+Example: ip prefix-list ALLOWED_FROM_R2 permit 192.168.2.0/24 le 27
+
+Meaning: - Permit any subnet inside 192.168.2.0/24 - With mask length up to /27
+
+Important: - Prefix-lists have an implicit deny at the end.
+
+Applied in BGP: neighbor X prefix-list NAME in|out
+
+Example: neighbor 10.1.2.2 prefix-list ALLOWED_FROM_R2 in
+
+2) ROUTE-MAP
+
+Definition: A route-map is a policy tool that matches routes and applies
+actions to them.
+
+Purpose: - Modify BGP attributes (local-preference, MED, etc.) - Filter
+routes - Implement traffic engineering policies
+
+Basic Structure: route-map NAME permit|deny SEQ match … set …
+
+Example: route-map USE_THIS_PATH_FOR_IPV4 permit 10 match ip address
+prefix-list PREFERRED_IPV4_PATH set local-preference 250
+
+Meaning: If the route matches the prefix-list, then set local-preference
+to 250 and permit it.
+
+Important: - Route-maps process in sequence order. - Implicit deny at the end if no match is permitted.
+
+3) HOW THEY WORK TOGETHER
+
+Prefix-list = selects which routes to match. Route-map = defines what to
+do with those routes.
+
+Typical flow: 
+1) Create prefix-list (select routes).
+2) Reference prefix-list inside route-map (match).
+3) Apply route-map to BGP neighbor (in or out).
+4) DIRECTION IN BGP
+
+IN = Modify or filter routes when receiving them. OUT = Modify or filter routes when advertising them.
+
+Examples: neighbor X route-map POLICY in neighbor X route-map POLICY out
+
+Common practice: - Set local-preference using IN. - Set MED or AS-path prepend using OUT.
+
+
+SUMMARY
+
+Prefix-list = Which routes? Route-map = What to do with them?
