@@ -1,0 +1,346 @@
+Router R0
+
+hostname R0
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 10.10.10.1 255.255.255.0
+
+interface Ethernet0/1
+ no shutdown
+ ip address 10.10.2.1 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.10.0.1 255.255.255.252
+
+========================================================================
+
+Router R1
+
+hostname R1
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 10.10.11.1 255.255.255.0
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.10.12.1 255.255.255.252
+
+interface Ethernet0/1
+ no shutdown
+ ip address 10.10.13.1 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.10.0.2 255.255.255.252
+
+========================================================================
+
+Router R2
+
+hostname R2
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 10.10.20.1 255.255.255.0
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.10.12.2 255.255.255.252
+
+interface Ethernet0/1
+ no shutdown
+ ip address 10.10.2.2 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.10.23.1 255.255.255.252
+
+========================================================================
+
+Router R3
+
+hostname R3
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 10.10.30.1 255.255.255.0
+
+interface Loopback1
+ no shutdown
+ ip address 10.10.40.1 255.255.255.0
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.20.34.1 255.255.255.252
+
+interface Ethernet0/1
+ no shutdown
+ ip address 10.10.13.2 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.10.23.2 255.255.255.252
+
+interface Ethernet0/3
+ no shutdown
+ ip address 10.20.34.5 255.255.255.252
+
+========================================================================
+
+Router R4
+
+hostname R4
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 20.20.4.4 255.255.255.255
+
+interface Loopback1
+ no shutdown
+ ip address 20.20.40.4 255.255.255.255
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.20.34.2 255.255.255.252
+
+interface Ethernet0/1
+ no shutdown
+ ip address 10.20.45.1 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.20.46.1 255.255.255.252
+
+interface Ethernet0/3
+ no shutdown
+ ip address 10.20.34.6 255.255.255.252
+
+========================================================================
+
+
+Router R5
+
+hostname R5
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 20.20.5.5 255.255.255.255
+
+interface Loopback1
+ no shutdown
+ ip address 20.20.50.5 255.255.255.255
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.20.56.1 255.255.255.252
+
+interface Ethernet0/1
+ no shutdown
+ ip address 10.20.45.2 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.30.57.1 255.255.255.252
+
+========================================================================
+
+Router R6
+
+hostname R6
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 20.20.6.6 255.255.255.255
+
+interface Loopback1
+ no shutdown
+ ip address 20.20.60.6 255.255.255.255
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.20.56.2 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.20.46.2 255.255.255.252
+
+========================================================================
+
+Router R7
+
+hostname R7
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Ethernet0/1
+ no shutdown
+ ip address 10.30.79.1 255.255.255.252
+
+interface Ethernet0/2
+ no shutdown
+ ip address 10.30.57.2 255.255.255.252
+
+interface Ethernet0/3
+ no shutdown
+ ip address 10.30.78.1 255.255.255.252
+
+========================================================================
+
+Router R8
+
+hostname R8
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 192.168.8.1 255.255.255.0
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.30.89.1 255.255.255.252
+
+interface Ethernet0/1
+ no shutdown
+ ip address 192.168.18.1 255.255.255.0
+
+interface Ethernet0/3
+ no shutdown
+ ip address 10.30.78.2 255.255.255.252
+
+========================================================================
+
+Router R9
+
+hostname R9
+no ip domain-lookup 
+banner motd #
+******************************************************
+*                                                    *
+*     ADVANCED ENTERPRISE ROUTING PRACTICAL LAB      *
+*                                                    *
+*     Unauthorized access is strictly prohibited     *
+*     All activities may be monitored and logged     *
+*                                                    *
+*     Prepared by Hussain Ali                        *
+*                                                    *
+******************************************************
+#
+interface Loopback0
+ no shutdown
+ ip address 192.168.9.1 255.255.255.0
+
+interface Ethernet0/0
+ no shutdown
+ ip address 10.30.89.2 255.255.255.252
+
+interface Ethernet0/1
+ no shutdown
+ ip address 10.30.79.2 255.255.255.252
