@@ -1,0 +1,54 @@
+OSPF EXTERNAL METRICS – NOTES
+
+When routes are redistributed into OSPF, they become external routes:
+- Type 1 (E1)
+- Type 2 (E2)
+
+1) OSPF External Type 1 (E1):
+- Metric = External metric + Internal OSPF cost
+- Takes into account the full path inside the OSPF domain
+
+Result:
+-> Routers prefer the closest exit point (lower total cost)
+-> More accurate path selection
+
+Use case:
+- When multiple redistribution points exist and optimal path matters
+
+--------------------------------------------------
+
+2) OSPF External Type 2 (E2):
+- Metric = External metric only
+- Internal OSPF cost is ignored (unless there is a tie)
+
+Result:
+-> All routers see the same cost regardless of distance
+-> Internal cost is only used if external metrics are equal
+
+Note:
+- This is the default behavior in OSPF
+
+--------------------------------------------------
+
+KEY DIFFERENCES:
+
+E1:
+- Considers internal + external cost
+- More accurate path selection
+
+E2:
+- Considers only external cost
+- Simpler but less precise
+
+--------------------------------------------------
+
+CONFIG EXAMPLE:
+
+redistribute eigrp 100 subnets metric-type 1   (E1)
+redistribute eigrp 100 subnets metric-type 2   (E2 - default)
+
+--------------------------------------------------
+
+KEY TAKEAWAY:
+- E1 = better path selection (uses full cost)
+- E2 = default, ignores internal distance

@@ -1,0 +1,35 @@
+EIGRP REDISTRIBUTION – NOTES
+
+- When redistributing routes into EIGRP, a seed metric MUST be defined.
+- Protocols like OSPF, RIP, and IS-IS use different metric systems, so EIGRP cannot automatically calculate a valid metric.
+
+DEFAULT BEHAVIOR:
+- Administrative Distance: 170 (External EIGRP route)
+- Metric: Infinity
+- Result:
+  -> Route is NOT installed in the EIGRP topology table
+  -> Redistribution is ineffective unless a metric is set
+
+HOW TO SET SEED METRIC:
+
+1) Using redistribute command:
+router eigrp 100
+ redistribute ospf 1 metric 10000 100 255 1 1500
+
+2) Using default-metric (applies globally):
+router eigrp 100
+ default-metric 10000 100 255 1 1500
+ redistribute ospf 1
+
+3) Using route-map (more control):
+route-map SET-METRIC permit 10
+ set metric 10000 100 255 1 1500
+
+router eigrp 100
+ redistribute ospf 1 route-map SET-METRIC
+
+METRIC FORMAT:
+metric <bandwidth> <delay> <reliability> <load> <mtu>
+
+KEY TAKEAWAY:
+- If you do not set a seed metric, redistributed routes will be ignored by EIGRP.
