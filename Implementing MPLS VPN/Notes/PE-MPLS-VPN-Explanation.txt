@@ -1,0 +1,100 @@
+==========================
+PE-R1 and PE-R2 Configuration Explanation
+==========================
+
+---
+GLOBAL MPLS AND LDP SETUP (Both Routers)
+---
+
+mpls ldp router-id loopback0 force
+- Forces LDP to use Loopback0 as the router ID for MPLS path discovery.
+
+int s1/0
+mpls ip
+- Enables MPLS on interface S1/0 to allow label switching.
+
+---
+VRF CONFIGURATION (Both Routers)
+---
+
+ip vrf M-ISA
+rd 100:1
+route-target 10:20
+- Creates VRF 'M-ISA' with a unique Route Distinguisher.
+- Sets route-target 10:20 for VPN route import/export.
+
+---
+VRF INTERFACE CONFIGURATION
+---
+
+PE-R1:
+int s1/3
+ip vrf forwarding M-ISA
+ip add 172.22.1.33 255.255.255.252
+
+PE-R2:
+int s1/2
+ip vrf forwarding M-ISA
+ip add 172.22.1.17 255.255.255.252
+
+- Binds the interface to the VRF.
+- Uses VRF-specific routing table.
+
+---
+EIGRP CONFIGURATION INSIDE THE VRF
+---
+
+PE-R1:
+router EIGRP MPLS
+address-family ipv4 vrf M-ISA autonomous-system 10
+network 172.22.1.32 255.255.255.252
+topology base
+redistribute bgp 100 metric 64 1000 255 1 1500
+
+PE-R2:
+router EIGRP MPLS
+address-family ipv4 vrf M-ISA autonomous-system 10
+network 172.22.1.16 255.255.255.252
+topology base
+redistribute bgp 100 metric 64 1000 255 1 1500
+
+- Named EIGRP mode under VRF M-ISA.
+- Uses AS 10.
+- Enables EIGRP on subnet.
+- Redistributes BGP routes into EIGRP with defined metric.
+
+---
+BGP VPNv4 CONFIGURATION
+---
+
+router bgp 100
+address-family vpnv4
+neighbor 172.16.10.11 activate         # PE-R1
+neighbor 172.16.10.11 send-community both
+
+neighbor 172.16.10.10 activate         # PE-R2
+neighbor 172.16.10.10 send-community both
+
+- Enables VPNv4 address family in BGP.
+- Activates neighbor (assumed PE-to-PE).
+- Sends both standard and extended communities (needed for route-targets).
+
+---
+BGP ↔ EIGRP REDISTRIBUTION
+---
+
+address-family ipv4 vrf M-ISA
+redistribute eigrp 10
+
+- Redistributes EIGRP-learned routes into BGP for VRF M-ISA.
+
+---
+SUMMARY
+---
+
+- MPLS is enabled between PE routers.
+- VRF M-ISA is defined and bound to customer-facing interfaces.
+- EIGRP runs inside the VRF for CE communication.
+- BGP and EIGRP are mutually redistributed.
+- VPNv4 BGP allows customer routes to be exchanged between PEs.
+- Matching route-targets (10:20) ensure proper VPN route sharing.
