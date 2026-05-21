@@ -1,0 +1,67 @@
+
+=========================
+DMVPN PHASE 3 CONFIGURATION TEMPLATE
+=========================
+
+HUB ROUTER CONFIGURATION:
+-------------------------
+interface Tunnel1
+ tunnel mode gre multipoint
+ tunnel source <HUB_LOOPBACK_INTERFACE>
+ tunnel key 100
+ ip address <HUB_TUNNEL_IP> <TUNNEL_SUBNET_MASK>
+ ip nhrp network-id 1
+ ip nhrp authentication <NHRP_PASSWORD>
+ ip nhrp map multicast dynamic
+ ip nhrp redirect
+
+router eigrp <EIGRP_NAME>
+ address-family ipv4 unicast autonomous-system <ASN>
+  eigrp router-id <HUB_ROUTER_ID>
+  network <TUNNEL_SUBNET> <TUNNEL_WILDCARD_MASK>
+  network <LOOPBACK_IP> 0.0.0.0
+  af-interface Tunnel1
+   no split-horizon
+   no next-hop-self
+
+
+SPOKE ROUTER CONFIGURATION:
+---------------------------
+interface Tunnel1
+ tunnel mode gre multipoint
+ tunnel source <SPOKE_LOOPBACK_INTERFACE>
+ tunnel key 100
+ ip address <SPOKE_TUNNEL_IP> <TUNNEL_SUBNET_MASK>
+ ip nhrp network-id 1
+ ip nhrp authentication <NHRP_PASSWORD>
+ ip nhrp nhs <HUB_TUNNEL_IP>
+ ip nhrp map multicast <HUB_PUBLIC_IP>
+ ip nhrp map <HUB_TUNNEL_IP> <HUB_PUBLIC_IP>
+ ip nhrp shortcut
+ ip nhrp redirect
+
+router eigrp <EIGRP_NAME>
+ address-family ipv4 unicast autonomous-system <ASN>
+  eigrp router-id <SPOKE_ROUTER_ID>
+  network <TUNNEL_SUBNET> <TUNNEL_WILDCARD_MASK>
+  network <LOOPBACK_IP> 0.0.0.0
+  af-interface Tunnel1
+   no next-hop-self
+
+
+PLACEHOLDER REPLACEMENTS:
+-------------------------
+<HUB_LOOPBACK_INTERFACE>      e.g., Loopback0
+<SPOKE_LOOPBACK_INTERFACE>    e.g., Loopback0
+<HUB_TUNNEL_IP>               e.g., 100.100.100.1
+<SPOKE_TUNNEL_IP>             e.g., 100.100.100.2
+<TUNNEL_SUBNET_MASK>          e.g., 255.255.255.248
+<NHRP_PASSWORD>               e.g., KUTUNNEL
+<HUB_PUBLIC_IP>               e.g., 91.x.x.x
+<ASN>                         e.g., 99
+<EIGRP_NAME>                  e.g., DMVPN
+<HUB_ROUTER_ID>               e.g., 1.1.1.1
+<SPOKE_ROUTER_ID>             e.g., 1.1.2.1
+<TUNNEL_SUBNET>               e.g., 100.100.100.0
+<TUNNEL_WILDCARD_MASK>        e.g., 0.0.0.7
+<LOOPBACK_IP>                 e.g., 1.1.1.1 or 1.1.2.1

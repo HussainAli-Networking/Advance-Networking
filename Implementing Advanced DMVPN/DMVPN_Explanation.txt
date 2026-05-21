@@ -1,0 +1,177 @@
+DMVPN Phase 3 with IPsec – Full Explanation
+
+1. What DMVPN Is
+Dynamic Multipoint VPN (DMVPN) is a Cisco VPN architecture that builds a scalable, dynamic, encrypted mesh between remote sites. It uses GRE tunnels, NHRP for mapping, and IPsec for encryption. Instead of building a static tunnel for every site, DMVPN creates a shared multipoint GRE (mGRE) interface so routers can form tunnels dynamically when needed.
+
+2. DMVPN Phase 3
+Phase 3 is the most advanced version of DMVPN. It fixes the inefficiencies of Phase 1 and Phase 2 by allowing:
+- Spoke-to-spoke direct tunnels
+- Hub-based control plane
+- No hub data forwarding after the first packet
+- Scalability for hundreds or thousands of spokes
+- Single mGRE interface per cloud
+
+3. DMVPN Components
+GRE over IPsec Transport Mode
+- GRE provides routing support, multicast, and mGRE.
+- IPsec transport mode encrypts GRE packets.
+
+NHRP (Next Hop Resolution Protocol)
+- The “ARP” of DMVPN.
+- Spokes register their tunnel IP and real public IP with the hub.
+- Hub stores the NHRP database.
+- Spokes request other spoke mappings when needed.
+
+Hubs
+- Used for control-plane only, not data-plane.
+- Receive the first packet between spokes.
+- Trigger “NHRP Redirect” telling spokes to form a direct tunnel.
+
+Spokes
+- Only know their hub’s NBMA (public IP).
+- Use NHRP to discover other spokes dynamically.
+- Build shortcuts (direct GRE tunnels) to other spokes.
+
+4. DMVPN Phase 3 Key Features
+
+4.1 NHRP Redirect (Hub)
+The hub sends NHRP Redirect messages to spokes. When a spoke sends traffic to another spoke through the hub, the hub tells it:
+“You should talk directly to the other spoke.”
+
+4.2 NHRP Shortcut (Spoke)
+Spokes use “ip nhrp shortcut” to install dynamic routes that bypass the hub and build a direct mGRE tunnel.
+
+4.3 mGRE Interface
+Instead of building 20, 50, or 200 tunnels, Phase 3 uses a single multipoint GRE interface:
+tunnel mode gre multipoint
+
+This allows unlimited spokes using one interface.
+
+4.4 Spoke-to-Spoke Dynamic Tunnel
+Traffic pattern:
+1. Spoke A sends first packet to the hub (because hub is NHS).
+2. Hub replies with NHRP Redirect.
+3. Spoke A sends NHRP Resolution Request to Spoke B.
+4. Spoke B replies.
+5. Spoke A and Spoke B form a direct encrypted tunnel.
+
+The hub only handles control-plane signaling, not data forwarding.
+
+5. NHRP Configuration Behavior
+
+Hub:
+- Dynamic multicast mapping
+- Redirect enabled
+- No need to manually define spoke public IPs
+
+Spoke:
+- Static mapping for hub
+- NHS pointing to hub
+- Shortcut enabled to allow Phase 3 direct tunnel formation
+
+6. Routing in DMVPN Phase 3
+
+EIGRP Characteristics:
+- Supports multicast (224.0.0.10)
+- Works perfectly with DMVPN
+- Needs split-horizon disabled on the hub
+- Tunnel delay is used to control primary/backup hub preference
+
+Common settings:
+Hub:
+ no split-horizon
+ ip nhrp redirect
+
+Spokes:
+ ip nhrp shortcut
+
+Routing Flow:
+- All spokes learn all routes from the hub.
+- When a spoke communicates with another spoke, direct connectivity is created.
+
+7. Dual-Hub Dual-Cloud DMVPN
+
+For redundancy:
+- Tunnel1 → Hub1 (Network-ID 1, Key 100)
+- Tunnel2 → Hub2 (Network-ID 2, Key 200)
+
+Spokes have:
+- Two DMVPN tunnel interfaces
+- Different NHRP mappings per cloud
+- Different EIGRP delay to prefer one hub over another
+
+Primary hub = lower delay (1000)
+Backup hub = higher delay (5000)
+
+8. IPsec Over DMVPN (Transport Mode)
+
+8.1 Why Transport Mode?
+Transport mode encrypts only the GRE packet, not the outer header. This is the correct mode for DMVPN:
+GRE over IPsec (Transport Mode)
+
+Tunnel mode encrypts additional headers and breaks mGRE scaling.
+
+8.2 IKE Phase 1 (ISAKMP)
+crypto isakmp policy 10
+ encr aes 256
+ hash sha256
+ authentication pre-share
+ group 14
+ lifetime 3600
+
+Meaning:
+- AES-256 encryption for IKE negotiation
+- SHA-256 integrity check
+- PSK authentication
+- DH Group 14 for key exchange
+- 1 hour SA lifetime
+
+8.3 IKE Phase 2 (IPsec)
+crypto ipsec transform-set DMVPN-SET esp-aes 256 esp-sha-hmac
+ mode transport
+
+Meaning:
+- AES-256 encryption for actual data traffic
+- SHA-HMAC for packet integrity
+- Transport mode is required for DMVPN
+
+8.4 IPsec Profile
+crypto ipsec profile DMVPN-PROFILE
+ set transform-set DMVPN-SET
+
+Attached to tunnel:
+tunnel protection ipsec profile DMVPN-PROFILE shared
+
+“shared” allows multiple dynamic peers using the same SA (required for DMVPN phase 3).
+
+8.5 Pre-Shared Key
+crypto isakmp key GHNDMVPN address 47.0.0.0 255.255.255.192
+
+Used by all DMVPN devices that belong to NBMA range 47.0.0.0/26.
+
+9. End-to-End Packet Flow in DMVPN Phase 3
+
+Step-by-step:
+1. Spoke A boots up and registers with Hub using NHRP.
+2. EIGRP neighbor relationship forms through GRE/IPsec.
+3. Spoke A needs to reach Spoke B.
+4. Spoke A sends the packet to Hub (default NHS).
+5. Hub sends NHRP Redirect.
+6. Spoke A queries NHRP for Spoke B’s public IP.
+7. Spoke B responds.
+8. Spoke A and B form a direct GRE tunnel.
+9. IPsec encrypts the GRE packets.
+10. Traffic now flows directly between the two spokes without touching the hub.
+
+The hub remains only a control point, not a forwarding device.
+
+10. Summary of DMVPN + IPsec
+- DMVPN Phase 3 is the modern standard for scalable VPN mesh.
+- Uses GRE, NHRP, EIGRP, and IPsec.
+- Allows hub-controlled spoke-to-spoke dynamic tunnels.
+- Reduces latency and offloads the hub from data plane.
+- Transport-mode IPsec ensures high performance.
+- Dual-hub DMVPN improves redundancy and failover.
+- EIGRP delay manipulation controls primary/backup hub selection.
+
+This architecture is the most common WAN overlay for large enterprise networks that need performance, encryption, and scalability.

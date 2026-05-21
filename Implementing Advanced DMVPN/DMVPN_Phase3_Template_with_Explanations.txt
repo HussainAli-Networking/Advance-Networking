@@ -1,0 +1,64 @@
+=========================
+DMVPN PHASE 3 CONFIGURATION TEMPLATE WITH EXPLANATIONS
+=========================
+
+HUB ROUTER CONFIGURATION:
+-------------------------
+interface Tunnel1
+ tunnel mode gre multipoint                # Configures the tunnel to operate in multipoint GRE mode (DMVPN Phase 3).
+ tunnel source <HUB_LOOPBACK_INTERFACE>      # Tunnel source is the loopback interface on the hub router.
+ tunnel key 100                             # Tunnel key for securing and uniquely identifying the tunnel.
+ ip address <HUB_TUNNEL_IP> <TUNNEL_SUBNET_MASK>  # Assigns IP address to the tunnel interface.
+ ip nhrp network-id 1                       # Defines the NHRP (Next Hop Resolution Protocol) network ID (must be the same on all routers).
+ ip nhrp authentication <NHRP_PASSWORD>     # Configures the NHRP authentication password.
+ ip nhrp map multicast dynamic              # Allows dynamic mapping for multicast traffic.
+ ip nhrp redirect                           # Enables NHRP redirect for optimized routing.
+
+router eigrp <EIGRP_NAME>
+ address-family ipv4 unicast autonomous-system <ASN>  # EIGRP configuration for IPv4 unicast with the specified ASN.
+  eigrp router-id <HUB_ROUTER_ID>                   # Specifies the router ID for the hub router.
+  network <TUNNEL_SUBNET> <TUNNEL_WILDCARD_MASK>     # Defines the network of the tunnel.
+  network <LOOPBACK_IP> 0.0.0.0                     # Specifies the loopback interface network to include in EIGRP.
+  af-interface Tunnel1                             # Associates EIGRP to the tunnel interface.
+   no split-horizon                               # Disables split-horizon for DMVPN to allow route advertisement between spokes.
+
+
+
+SPOKE ROUTER CONFIGURATION:
+---------------------------
+interface Tunnel1
+ tunnel mode gre multipoint                # Configures the tunnel in multipoint GRE mode.
+ tunnel source <SPOKE_LOOPBACK_INTERFACE>    # Tunnel source is the loopback interface on the spoke router.
+ tunnel key 100                             # Tunnel key for identifying the tunnel.
+ ip address <SPOKE_TUNNEL_IP> <TUNNEL_SUBNET_MASK>  # Assigns IP address to the tunnel interface.
+ ip nhrp network-id 1                       # NHRP network ID, must match the hub.
+ ip nhrp authentication <NHRP_PASSWORD>     # NHRP authentication password (same as the hub).
+ ip nhrp nhs <HUB_TUNNEL_IP>                # Specifies the Next Hop Server (NHS) for the spoke (typically the hub router).
+ ip nhrp map multicast <HUB_PUBLIC_IP>      # Maps multicast address to the hub's IP for proper routing.
+ ip nhrp map <HUB_TUNNEL_IP> <HUB_PUBLIC_IP>  # Maps the hub's tunnel IP to the public IP.
+ ip nhrp shortcut                         # Enables NHRP shortcut for direct spoke-to-spoke communication (bypassing the hub).
+
+router eigrp <EIGRP_NAME>
+ address-family ipv4 unicast autonomous-system <ASN>  # EIGRP configuration for IPv4 unicast with specified ASN.
+  eigrp router-id <SPOKE_ROUTER_ID>                   # Specifies the router ID for the spoke router.
+  network <TUNNEL_SUBNET> <TUNNEL_WILDCARD_MASK>     # Defines the network for the tunnel.
+  network <LOOPBACK_IP> 0.0.0.0                     # Specifies the loopback network of the spoke router.
+
+
+
+PLACEHOLDER REPLACEMENTS:
+-------------------------
+<HUB_LOOPBACK_INTERFACE>      e.g., Loopback0         # Replace with the hub router's loopback interface.
+<SPOKE_LOOPBACK_INTERFACE>    e.g., Loopback0         # Replace with the spoke router's loopback interface.
+<HUB_TUNNEL_IP>               e.g., 100.100.100.1    # Replace with the hub's tunnel IP.
+<SPOKE_TUNNEL_IP>             e.g., 100.100.100.2    # Replace with the spoke's tunnel IP.
+<TUNNEL_SUBNET_MASK>          e.g., 255.255.255.248  # Replace with the appropriate subnet mask for the tunnel.
+<NHRP_PASSWORD>               e.g., KUTUNNEL         # Replace with the NHRP authentication password (must be the same on hub and spoke).
+<HUB_PUBLIC_IP>               e.g., 91.x.x.x         # Replace with the public IP address of the hub router.
+<ASN>                         e.g., 99               # Replace with the Autonomous System Number (ASN) for EIGRP.
+<EIGRP_NAME>                  e.g., DMVPN            # Replace with the name of your EIGRP process.
+<HUB_ROUTER_ID>               e.g., 1.1.1.1          # Replace with the hub router ID for EIGRP.
+<SPOKE_ROUTER_ID>             e.g., 1.1.2.1          # Replace with the spoke router ID for EIGRP.
+<TUNNEL_SUBNET>               e.g., 100.100.100.0    # Replace with the tunnel network (e.g., the IP address range).
+<TUNNEL_WILDCARD_MASK>        e.g., 0.0.0.7          # Replace with the wildcard mask for the tunnel network.
+<LOOPBACK_IP>                 e.g., 1.1.1.1 or 1.1.2.1  # Replace with the IP address of the loopback interface on the respective router.
